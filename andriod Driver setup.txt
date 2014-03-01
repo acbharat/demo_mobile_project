@@ -1,0 +1,57 @@
+Install the Android SDK
+
+1. Download the Android SDK, and unpack it to ~/android_sdk/. NOTE: The location of the Android SDK must exist in ../android_sdk, relative to the directory containing the Selenium repository. 
+
+2. extarct to root in any folder say sdk
+
+3 	$cd ~/sdk/tools/
+	$./android create avd -n vishal -t 3 -c 500M
+
+
+
+-n: specifies the name of the AVD.
+
+-t: specifies the platform target. For an exhaustive list of targets, run:
+
+./android list targets
+
+Make sure the target level you selected corresponds to a supported SDK platform.
+
+-c: specifies the SD card storage space.
+
+When prompted "Do you wish to create a custom hardware profile [no]" enter "no".
+
+Now, start the emulator. This can take a while, but take a look at the FAQ below for tips on how to improve performance of the emulator.
+
+$./emulator -avd vishal &
+
+Using the remote WebDriver server
+Install the WebDriver APK
+
+Every device or emulator has a serial ID. Run this command to get the serial ID of the device or emulator you want to use:
+
+$~/android_sdk/platform-tools/adb devices
+List of devices attached 
+emulator-5554	device
+
+$./adb -s <serialId> -e install -r  android-server.apk   {download andriod-server.apk and keep in platform-tools for easyness}
+./adb -s emulator-5554 -e install -r  android-server-2.32.0.apk
+
+Make sure you are allowing installation of application not coming from Android Market. Go to Settings -> Applications, and check "Unknown Sources".
+
+Start the Android WebDriver application through the UI of the device or by running this command:
+
+$./adb -s emulator-5554 shell am start -a android.intent.action.MAIN -n org.openqa.selenium.android.app/.MainActivity
+
+You can start the application in debug mode, which has more verbose logs by doing:
+
+$./adb -s emulator-5554 shell am start -a android.intent.action.MAIN -n org.openqa.selenium.android.app/.MainActivity -e debug true
+
+Now we need to setup the port forwarding in order to forward traffic from the host machine to the emulator. In a terminal type:
+
+$./adb -s emulator-5554 forward tcp:8090 tcp:8090
+
+This will make the android server available at http://localhost:8090/wd/hub from the host machine. You're now ready to run the tests. Let's take a look at some code. 
+
+
+http://code.google.com/p/selenium/wiki/AndroidDriver
